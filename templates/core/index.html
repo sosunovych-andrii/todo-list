@@ -24,12 +24,12 @@
         {% endfor %}
       </p>
       {% if task.is_completed %}
-        <form action="{% url 'core:task-mark-uncompleted' pk=task.pk %}" method="post" style="display:inline;">
+        <form method="post" action="{% url 'core:task-toggle-completion' pk=task.pk action='uncomplete' %}" style="display:inline;">
           {% csrf_token %}
           <button type="submit" class="btn btn-secondary mr-1">Undo</button>
         </form>
       {% else %}
-        <form action="{% url 'core:task-mark-completed' pk=task.pk %}" method="post" style="display:inline;">
+        <form method="post" action="{% url 'core:task-toggle-completion' pk=task.pk action='complete' %}" style="display:inline;">
           {% csrf_token %}
           <button type="submit" class="btn btn-outline-success mr-1">✅</button>
         </form>
