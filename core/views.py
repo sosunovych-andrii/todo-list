@@ -1,5 +1,5 @@
 from django.http import HttpRequest, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import generic
 
@@ -71,17 +71,14 @@ class TagDeleteView(generic.DeleteView):
     success_url = reverse_lazy("core:tag-list")
 
 
-def task_mark_completed(request: HttpRequest, pk: int) -> HttpResponseRedirect:
-    task = get_object_or_404(Task, pk=pk)
-    if request.method == "POST":
-        task.is_completed = True
+class ToggleTaskCompletionView(generic.View):
+    def post(self, request: HttpRequest, pk: int, action: str) -> HttpResponseRedirect:
+        task = get_object_or_404(Task, pk=pk)
+        if action == "complete":
+            task.is_completed = True
+        elif action == "uncomplete":
+            task.is_completed = False
+        else:
+            return redirect("/")
         task.save()
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-
-
-def task_mark_uncompleted(request: HttpRequest, pk: int) -> HttpResponseRedirect:
-    task = get_object_or_404(Task, pk=pk)
-    if request.method == "POST":
-        task.is_completed = False
-        task.save()
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return redirect(request.META.get("HTTP_REFERER", "/"))
